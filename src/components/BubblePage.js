@@ -4,18 +4,33 @@ import Bubbles from "./Bubbles";
 import ColorList from "./ColorList";
 import fetchColorService from '../services/fetchColorService';
 
+import {api} from '../helpers/axiosWithAuth';
+
 const BubblePage = () => {
   const [colors, setColors] = useState([]);
   const [editing, setEditing] = useState(false);
+
+  useEffect(()=>{
+    loadColors();
+  }, []);
+
+  const loadColors = async () => {
+    const result = await fetchColorService();
+    setColors(result);
+  }
 
   const toggleEdit = (value) => {
     setEditing(value);
   };
 
-  const saveEdit = (editColor) => {
+  const saveEdit = async (editColor) => {
+    await api.put(`http://localhost:5000/api/colors/${editColor.id}`, editColor);
+    await loadColors();
   };
 
-  const deleteColor = (colorToDelete) => {
+  const deleteColor = async (colorToDelete) => {
+    await api.delete(`http://localhost:5000/api/colors/${colorToDelete.id}`);
+    await loadColors();
   };
 
   return (
